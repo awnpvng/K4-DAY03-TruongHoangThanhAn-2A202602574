@@ -70,6 +70,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
     
     step = 0
     trace_logs = []
+    history = []
     tools_list = mcp_server.list_tools()
     
     while step < MAX_ITERATIONS:
@@ -78,7 +79,12 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
         
         # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
+        llm_response = provider.generate_with_tools(
+            user_query,
+            tools_list,
+            system_prompt=REACT_AGENT_SYSTEM_PROMPT,
+            history=history
+        )
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
         
         thought = llm_response.get("thought", "Đang suy luận...")
@@ -151,20 +157,19 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                 "observation": obs_data,
                 "latency_ms": latency_ms
             })
-            
-            # Kết thúc vòng lặp sau khi hoàn tất Observation và xuất Final Answer
-            print(f"🧠 [Thought]: Đã nhận được dữ liệu từ MCP Server. Tổng hợp kết quả phản hồi.")
-            print(f"🏁 [Final Answer]: {final_answer}")
-            
-            trace_logs.append({
-                "step": step + 1,
-                "query": user_query,
-                "action_type": "FINAL_ANSWER",
-                "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-                "output": final_answer,
-                "latency_ms": 10.0
+
+            history.append(llm_response.get("history_entry", {
+                "role": "model",
+                "tool_name": tool_name,
+                "arguments": arguments
+            }))
+            history.append({
+                "role": "tool",
+                "tool_name": tool_name,
+                "content": obs_data
             })
-            break
+            print(f"🧠 [Thought]: Đã nhận Observation. Tiếp tục suy luận ở vòng kế tiếp.")
+            continue
 
     return trace_logs
 

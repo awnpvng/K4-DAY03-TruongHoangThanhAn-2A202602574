@@ -3,9 +3,9 @@
     "step": 1,
     "query": "Tôi là sinh viên mới. Bạn hãy giải thích ngắn gọn quy chế học vụ cơ bản, GPA và cảnh báo học vụ tại VinUni.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool.",
-    "output": "[Mock Agent Response]: Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-    "latency_ms": 0.46
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Chào bạn, chào mừng bạn đến với VinUni! Dưới đây là tóm tắt ngắn gọn về quy chế học vụ cơ bản, thang điểm GPA và quy định cảnh báo học vụ:\n\n---\n\n### 1. Thang điểm và Cách tính GPA\n* **Hệ thống thang điểm:** VinUni áp dụng thang điểm chữ (A, B, C, D, F) tương ứng với thang điểm số **4.0**.\n  * **A / A-:** Xuất sắc (3.7 – 4.0)\n  * **B+ / B / B-:** Khá – Giỏi (2.7 – 3.3)\n  * **C+ / C / C-:** Trung bình (1.7 – 2.3)\n  * **D / D+:** Đạt tối thiểu (1.0 – 1.3)\n  * **F:** Không đạt (0.0 – phải học lại môn bắt buộc).\n* **GPA (Grade Point Average):** Điểm trung bình học kỳ.\n* **cGPA (Cumulative GPA):** Điểm trung bình tích lũy toàn khóa, được tính dựa trên số tín chỉ của từng môn học bạn đã hoàn thành.\n\n---\n\n### 2. Quy chế Cảnh báo Học vụ (Academic Probation)\n* **Mục đích:** Nhằm phát hiện sớm các sinh viên gặp khó khăn trong học tập để kịp thời hỗ trợ và tư vấn lộ trình học phù hợp.\n* **Các trường hợp thường bị cảnh báo học vụ:**\n  * Điểm trung bình học kỳ (GPA) hoặc tích lũy (cGPA) dưới ngưỡng chuẩn (thường là **dưới 2.0/4.0**).\n  * Không tích lũy đủ số tín chỉ tối thiểu theo yêu cầu của học kỳ/năm học.\n* **Hệ quả & Hỗ trợ:**\n  * Sinh viên nhận cảnh báo học vụ sẽ bị giới hạn số lượng tín chỉ tối đa được đăng ký trong học kỳ kế tiếp.\n  * Bắt buộc phải làm việc với **Cố vấn học tập (Academic Advisor)** để xây dựng kế hoạch cải thiện điểm số.\n  * Nếu bị cảnh báo học vụ liên tiếp nhiều học kỳ mà không cải thiện, sinh viên có thể đối mặt với nguy cơ buộc thôi học.\n\n---\n\n### 3. Lời khuyên cho Tân Sinh viên\n* Theo dõi sát sao cổng thông tin học tập cá nhân và lịch thi.\n* Chủ động liên hệ với Cố vấn học thuật hoặc Giáo sư hướng dẫn ngay khi gặp khó khăn về môn học.\n* Đảm bảo tham gia đầy đủ các buổi học, bài tập lớn và kỳ thi theo đúng quy chế liêm chính học thuật (Academic Integrity).\n\nNếu bạn cần tra cứu thông tin học vụ cá nhân, lịch thi hoặc đặt lịch hẹn với Cố vấn học tập, bạn chỉ cần cung cấp **Mã sinh viên (Student ID)** để mình hỗ trợ nhé!",
+    "latency_ms": 7622.93
   },
   {
     "step": 1,
@@ -41,15 +41,151 @@
         ]
       }
     },
-    "latency_ms": 0.27
+    "latency_ms": 2517.04
   },
   {
     "step": 2,
     "query": "Tôi cần kiểm tra hồ sơ học vụ của mình. Hãy tra cứu sinh viên SV2026001 và cho biết họ tên, lớp, GPA, trạng thái học tập và cố vấn.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Kết quả tra cứu cho sinh viên SV2026001 (Nguyễn Văn An): Lớp AI-K4, GPA: 3.85, Email: an.nv@vinuni.edu.vn, Trạng thái: Đang học, Cố vấn: PGS.TS Nguyễn Văn A. Lịch thi: Machine Learning - 20/09/2026 08:00 tại phòng A201; Data Structures - 24/09/2026 13:30 tại phòng B302.",
-    "latency_ms": 10.0
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 855.05
+  },
+  {
+    "step": 3,
+    "query": "Tôi cần kiểm tra hồ sơ học vụ của mình. Hãy tra cứu sinh viên SV2026001 và cho biết họ tên, lớp, GPA, trạng thái học tập và cố vấn.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 864.37
+  },
+  {
+    "step": 4,
+    "query": "Tôi cần kiểm tra hồ sơ học vụ của mình. Hãy tra cứu sinh viên SV2026001 và cho biết họ tên, lớp, GPA, trạng thái học tập và cố vấn.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 851.65
+  },
+  {
+    "step": 5,
+    "query": "Tôi cần kiểm tra hồ sơ học vụ của mình. Hãy tra cứu sinh viên SV2026001 và cho biết họ tên, lớp, GPA, trạng thái học tập và cố vấn.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 871.39
   },
   {
     "step": 1,
@@ -85,43 +221,331 @@
         ]
       }
     },
-    "latency_ms": 0.31
+    "latency_ms": 693.82
   },
   {
     "step": 2,
     "query": "Tôi sắp xếp lịch ôn tập. Hãy cho tôi biết SV2026001 thi những môn nào, vào ngày giờ nào và tại phòng nào.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Kết quả tra cứu cho sinh viên SV2026001 (Nguyễn Văn An): Lớp AI-K4, GPA: 3.85, Email: an.nv@vinuni.edu.vn, Trạng thái: Đang học, Cố vấn: PGS.TS Nguyễn Văn A. Lịch thi: Machine Learning - 20/09/2026 08:00 tại phòng A201; Data Structures - 24/09/2026 13:30 tại phòng B302.",
-    "latency_ms": 10.0
-  },
-  {
-    "step": 1,
-    "query": "GPA của tôi đang cần được tư vấn. Hãy đặt lịch gặp PGS.TS Nguyễn Văn A cho SV2026001 lúc 14:00 ngày 15/09/2026.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "schedule_appointment",
+    "tool_name": "academic_query",
     "arguments": {
-      "student_id": "SV2026001",
-      "datetime_str": "14:00 15/09/2026",
-      "advisor_name": "PGS.TS Nguyễn Văn A"
+      "student_id": "SV2026001"
     },
     "observation": {
       "status": "SUCCESS",
-      "booking_id": "BK-SV2026001-99",
       "student_id": "SV2026001",
-      "datetime": "14:00 15/09/2026",
-      "advisor": "PGS.TS Nguyễn Văn A",
-      "message": "Đặt lịch thành công cho sinh viên SV2026001 với PGS.TS Nguyễn Văn A vào lúc 14:00 15/09/2026."
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
     },
-    "latency_ms": 0.39
+    "latency_ms": 698.67
+  },
+  {
+    "step": 3,
+    "query": "Tôi sắp xếp lịch ôn tập. Hãy cho tôi biết SV2026001 thi những môn nào, vào ngày giờ nào và tại phòng nào.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 712.09
+  },
+  {
+    "step": 4,
+    "query": "Tôi sắp xếp lịch ôn tập. Hãy cho tôi biết SV2026001 thi những môn nào, vào ngày giờ nào và tại phòng nào.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 688.78
+  },
+  {
+    "step": 5,
+    "query": "Tôi sắp xếp lịch ôn tập. Hãy cho tôi biết SV2026001 thi những môn nào, vào ngày giờ nào và tại phòng nào.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 696.66
+  },
+  {
+    "step": 1,
+    "query": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 812.08
   },
   {
     "step": 2,
-    "query": "GPA của tôi đang cần được tư vấn. Hãy đặt lịch gặp PGS.TS Nguyễn Văn A cho SV2026001 lúc 14:00 ngày 15/09/2026.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Đặt lịch thành công cho sinh viên SV2026001 với PGS.TS Nguyễn Văn A vào lúc 14:00 15/09/2026.",
-    "latency_ms": 10.0
+    "query": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 665.18
+  },
+  {
+    "step": 3,
+    "query": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 720.43
+  },
+  {
+    "step": 4,
+    "query": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 681.51
+  },
+  {
+    "step": 5,
+    "query": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "student_id": "SV2026001",
+      "data": {
+        "full_name": "Nguyễn Văn An",
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "email": "an.nv@vinuni.edu.vn",
+        "status": "Đang học",
+        "advisor": "PGS.TS Nguyễn Văn A",
+        "exam_schedule": [
+          {
+            "course": "Machine Learning",
+            "date": "20/09/2026",
+            "time": "08:00",
+            "room": "A201"
+          },
+          {
+            "course": "Data Structures",
+            "date": "24/09/2026",
+            "time": "13:30",
+            "room": "B302"
+          }
+        ]
+      }
+    },
+    "latency_ms": 711.18
   },
   {
     "step": 1,
@@ -135,14 +559,62 @@
       "status": "NOT_FOUND",
       "message": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'"
     },
-    "latency_ms": 0.38
+    "latency_ms": 686.24
   },
   {
     "step": 2,
     "query": "Tôi nhập nhầm mã? Hãy kiểm tra lịch thi của sinh viên SV9999999 và cho biết nếu không có dữ liệu.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'",
-    "latency_ms": 10.0
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV9999999"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'"
+    },
+    "latency_ms": 729.83
+  },
+  {
+    "step": 3,
+    "query": "Tôi nhập nhầm mã? Hãy kiểm tra lịch thi của sinh viên SV9999999 và cho biết nếu không có dữ liệu.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV9999999"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'"
+    },
+    "latency_ms": 719.03
+  },
+  {
+    "step": 4,
+    "query": "Tôi nhập nhầm mã? Hãy kiểm tra lịch thi của sinh viên SV9999999 và cho biết nếu không có dữ liệu.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV9999999"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'"
+    },
+    "latency_ms": 744.01
+  },
+  {
+    "step": 5,
+    "query": "Tôi nhập nhầm mã? Hãy kiểm tra lịch thi của sinh viên SV9999999 và cho biết nếu không có dữ liệu.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "academic_query",
+    "arguments": {
+      "student_id": "SV9999999"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy dữ liệu sinh viên có mã 'SV9999999'"
+    },
+    "latency_ms": 700.92
   }
 ]

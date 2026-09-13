@@ -23,7 +23,13 @@ class BaseLLMProvider:
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         raise NotImplementedError
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(
+        self,
+        prompt: str,
+        tools_schema: List[Dict[str, Any]],
+        system_prompt: str = "",
+        history: List[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         raise NotImplementedError
 
 
@@ -35,31 +41,101 @@ class MockOfflineProvider(BaseLLMProvider):
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         return f"[Mock Chatbot Response]: Xin chào! Tôi đã nhận được câu hỏi '{prompt}'. (Chế độ Chatbot không có Tool tra cứu dữ liệu thời gian thực)."
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(
+        self,
+        prompt: str,
+        tools_schema: List[Dict[str, Any]],
+        system_prompt: str = "",
+        history: List[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         prompt_lower = prompt.lower()
+        history = history or []
         student_match = re.search(r"sv\d{7}", prompt_lower)
         student_id = student_match.group(0).upper() if student_match else "SV2026001"
+        tool_history = [entry for entry in history if entry.get("role") == "tool"]
+        is_multi_step = "sau đó" in prompt_lower and "đặt lịch" in prompt_lower
         
         # Mô phỏng nhận diện intent gọi Tool
-        if "đặt lịch" in prompt_lower and student_match:
-            return {
-                "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": student_id, "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": f"Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên {student_id}. Tôi sẽ gọi tool schedule_appointment."
-            }
-        elif student_match or "tra cứu" in prompt_lower or "lịch thi" in prompt_lower:
+        if is_multi_step and not any(entry.get("tool_name") == "academic_query" for entry in tool_history):
             return {
                 "type": "tool_call",
                 "tool_name": "academic_query",
                 "arguments": {"student_id": student_id},
-                "thought": f"Người dùng muốn tra cứu thông tin học vụ hoặc lịch thi của {student_id}. Tôi sẽ gọi tool academic_query."
+                "thought": f"Tôi cần tra cứu cố vấn của {student_id} trước khi đặt lịch.",
+                "history_entry": {
+                    "role": "model",
+                    "tool_name": "academic_query",
+                    "arguments": {"student_id": student_id}
+                }
             }
-        else:
+        elif is_multi_step and not any(entry.get("tool_name") == "schedule_appointment" for entry in tool_history):
+            advisor_name = "PGS.TS Nguyễn Văn A"
+            for entry in reversed(tool_history):
+                result = entry.get("content", {})
+                advisor_name = result.get("data", {}).get("advisor", advisor_name)
+                break
+            return {
+                "type": "tool_call",
+                "tool_name": "schedule_appointment",
+                "arguments": {"student_id": student_id, "datetime_str": "14:00 15/09/2026", "advisor_name": advisor_name},
+                "thought": f"Đã tìm thấy cố vấn {advisor_name}. Tôi sẽ tiếp tục đặt lịch.",
+                "history_entry": {
+                    "role": "model",
+                    "tool_name": "schedule_appointment",
+                    "arguments": {"student_id": student_id, "datetime_str": "14:00 15/09/2026", "advisor_name": advisor_name}
+                }
+            }
+        elif is_multi_step and any(entry.get("tool_name") == "schedule_appointment" for entry in tool_history):
+            booking = tool_history[-1].get("content", {})
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": f"[Mock Agent Response]: {booking.get('message', 'Đã hoàn tất đặt lịch tư vấn.')} ",
+                "thought": "Đã tra cứu cố vấn và hoàn tất đặt lịch theo yêu cầu."
+            }
+        elif "đặt lịch" in prompt_lower and student_match:
+            return {
+                "type": "tool_call",
+                "tool_name": "schedule_appointment",
+                "arguments": {"student_id": student_id, "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
+                "thought": f"Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên {student_id}. Tôi sẽ gọi tool schedule_appointment.",
+                "history_entry": {
+                    "role": "model",
+                    "tool_name": "schedule_appointment",
+                    "arguments": {"student_id": student_id, "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"}
+                }
+            }
+        elif (student_match or "tra cứu" in prompt_lower or "lịch thi" in prompt_lower) and not tool_history:
+            return {
+                "type": "tool_call",
+                "tool_name": "academic_query",
+                "arguments": {"student_id": student_id},
+                "thought": f"Người dùng muốn tra cứu thông tin học vụ hoặc lịch thi của {student_id}. Tôi sẽ gọi tool academic_query.",
+                "history_entry": {
+                    "role": "model",
+                    "tool_name": "academic_query",
+                    "arguments": {"student_id": student_id}
+                }
+            }
+        else:
+            if tool_history:
+                last_result = tool_history[-1].get("content", {})
+                if last_result.get("status") == "NOT_FOUND":
+                    content = f"[Mock Agent Response]: {last_result.get('message', 'Không tìm thấy dữ liệu sinh viên yêu cầu.')}"
+                elif last_result.get("status") == "SUCCESS" and "data" in last_result:
+                    data = last_result["data"]
+                    content = (
+                        f"[Mock Agent Response]: {data.get('full_name', '')} thuộc lớp {data.get('class', '')}, "
+                        f"GPA {data.get('gpa', '')}, trạng thái {data.get('status', '')}, "
+                        f"cố vấn {data.get('advisor', '')}."
+                    )
+                else:
+                    content = "[Mock Agent Response]: Đã hoàn tất các bước xử lý theo yêu cầu."
+            else:
+                content = "[Mock Agent Response]: Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp."
+            return {
+                "type": "text",
+                "content": content,
+                "thought": "Đã nhận đủ Observation cần thiết và có thể trả lời người dùng."
             }
 
 
@@ -81,7 +157,13 @@ class GeminiProvider(BaseLLMProvider):
         except Exception as e:
             return f"[Gemini Exception]: {str(e)}"
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(
+        self,
+        prompt: str,
+        tools_schema: List[Dict[str, Any]],
+        system_prompt: str = "",
+        history: List[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_gemini_api_key_here":
             print("ℹ️ [Gemini Provider]: Chưa tìm thấy GEMINI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
@@ -110,9 +192,10 @@ class GeminiProvider(BaseLLMProvider):
                 temperature=0.2
             )
 
+            contents = self._build_contents(prompt, history or [], types)
             response = client.models.generate_content(
                 model=self.model_name,
-                contents=prompt,
+                contents=contents,
                 config=config
             )
 
@@ -124,7 +207,12 @@ class GeminiProvider(BaseLLMProvider):
                     "type": "tool_call",
                     "tool_name": call.name,
                     "arguments": args,
-                    "thought": f"Gemini quyết định gọi công cụ '{call.name}' với tham số: {json.dumps(args, ensure_ascii=False)}"
+                    "thought": f"Gemini quyết định gọi công cụ '{call.name}' với tham số: {json.dumps(args, ensure_ascii=False)}",
+                    "history_entry": {
+                        "role": "model",
+                        "tool_name": call.name,
+                        "arguments": args
+                    }
                 }
             else:
                 return {
@@ -136,6 +224,29 @@ class GeminiProvider(BaseLLMProvider):
         except Exception as e:
             print(f"⚠️ [Gemini API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+
+    @staticmethod
+    def _build_contents(prompt: str, history: List[Dict[str, Any]], types) -> List[Any]:
+        contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
+        for entry in history:
+            role = entry.get("role")
+            if role == "model":
+                contents.append(types.Content(
+                    role="model",
+                    parts=[types.Part.from_function_call(
+                        name=entry["tool_name"],
+                        args=entry.get("arguments", {})
+                    )]
+                ))
+            elif role == "tool":
+                contents.append(types.Content(
+                    role="tool",
+                    parts=[types.Part.from_function_response(
+                        name=entry["tool_name"],
+                        response={"result": entry.get("content", {})}
+                    )]
+                ))
+        return contents
 
 
 class OpenAIProvider(BaseLLMProvider):
@@ -159,7 +270,13 @@ class OpenAIProvider(BaseLLMProvider):
         except Exception as e:
             return f"[OpenAI Exception]: {str(e)}"
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(
+        self,
+        prompt: str,
+        tools_schema: List[Dict[str, Any]],
+        system_prompt: str = "",
+        history: List[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_openai_api_key_here":
             print("ℹ️ [OpenAI Provider]: Chưa tìm thấy OPENAI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)

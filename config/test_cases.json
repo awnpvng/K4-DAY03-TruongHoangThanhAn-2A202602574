@@ -23,9 +23,9 @@
   {
     "id": "TC04",
     "type": "appointment_booking",
-    "question": "GPA của tôi đang cần được tư vấn. Hãy đặt lịch gặp PGS.TS Nguyễn Văn A cho SV2026001 lúc 14:00 ngày 15/09/2026.",
-    "expected_behavior": "Agent gọi 'schedule_appointment' với đúng student_id, datetime_str và advisor_name, sau đó xác nhận mã đặt lịch.",
-    "complexity": "Medium"
+    "question": "Hãy tra cứu cố vấn của SV2026001, sau đó đặt lịch gặp cố vấn đó lúc 14:00 ngày 15/09/2026.",
+    "expected_behavior": "Agent trước tiên gọi 'academic_query' để lấy advisor, sau đó gọi 'schedule_appointment' với advisor_name lấy từ Observation và xác nhận mã đặt lịch.",
+    "complexity": "High"
   },
   {
     "id": "TC05",
