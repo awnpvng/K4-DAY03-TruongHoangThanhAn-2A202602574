@@ -126,6 +126,13 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                             f"Lớp {d.get('class', '')}, GPA: {d.get('gpa', '')}, Email: {d.get('email', '')}, "
                             f"Trạng thái: {d.get('status', '')}, Cố vấn: {d.get('advisor', '')}."
                         )
+                        exam_schedule = d.get("exam_schedule", [])
+                        if exam_schedule:
+                            schedule_text = "; ".join(
+                                f"{exam['course']} - {exam['date']} {exam['time']} tại phòng {exam['room']}"
+                                for exam in exam_schedule
+                            )
+                            final_answer += f" Lịch thi: {schedule_text}."
                     elif "message" in obs_data:
                         final_answer = obs_data["message"]
                     else:

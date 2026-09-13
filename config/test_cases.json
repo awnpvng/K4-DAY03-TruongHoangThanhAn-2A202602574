@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC01",
+    "type": "direct_query",
+    "question": "Tôi là sinh viên mới. Bạn hãy giải thích ngắn gọn quy chế học vụ cơ bản, GPA và cảnh báo học vụ tại VinUni.",
+    "expected_behavior": "Agent trả lời trực tiếp bằng kiến thức chung, không gọi Tool và không bịa quy định cá nhân.",
+    "complexity": "Low"
+  },
+  {
+    "id": "TC02",
+    "type": "single_tool_query",
+    "question": "Tôi cần kiểm tra hồ sơ học vụ của mình. Hãy tra cứu sinh viên SV2026001 và cho biết họ tên, lớp, GPA, trạng thái học tập và cố vấn.",
+    "expected_behavior": "Agent gọi 'academic_query' với student_id là SV2026001 và tổng hợp đúng các trường dữ liệu được trả về.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC03",
+    "type": "exam_schedule_query",
+    "question": "Tôi sắp xếp lịch ôn tập. Hãy cho tôi biết SV2026001 thi những môn nào, vào ngày giờ nào và tại phòng nào.",
+    "expected_behavior": "Agent gọi 'academic_query' với student_id là SV2026001 và liệt kê đầy đủ môn thi, ngày, giờ và phòng thi.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC04",
+    "type": "appointment_booking",
+    "question": "GPA của tôi đang cần được tư vấn. Hãy đặt lịch gặp PGS.TS Nguyễn Văn A cho SV2026001 lúc 14:00 ngày 15/09/2026.",
+    "expected_behavior": "Agent gọi 'schedule_appointment' với đúng student_id, datetime_str và advisor_name, sau đó xác nhận mã đặt lịch.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC05",
+    "type": "edge_case_handling",
+    "question": "Tôi nhập nhầm mã? Hãy kiểm tra lịch thi của sinh viên SV9999999 và cho biết nếu không có dữ liệu.",
+    "expected_behavior": "Agent gọi 'academic_query', nhận trạng thái NOT_FOUND và thông báo lịch sự, không bịa lịch thi.",
+    "complexity": "Medium"
+  }
+]
